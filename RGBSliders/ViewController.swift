@@ -20,9 +20,12 @@ class ViewController: UIViewController {
     @IBOutlet weak var greenSlider: UISlider!
     @IBOutlet weak var blueSlider: UISlider!
     
+    @IBOutlet weak var hexText: UITextField!
+    
     private var currentRed: CGFloat = 1
     private var currentGreen: CGFloat = 0.5
     private var currentBlue: CGFloat = 0
+
     
     // MARK: - viewDIDLoad
     override func viewDidLoad() {
@@ -32,24 +35,30 @@ class ViewController: UIViewController {
         showSlidersLabels()
         showColorView(red: currentRed, green: currentGreen, blue: currentBlue)
     }
-
+    
     // MARK: - Slider Actions
     @IBAction func redSliderChanging() {
         currentRed = CGFloat(redSlider.value)
         showSlidersLabels()
         showColorView(red: currentRed, green: currentGreen, blue: currentBlue)
+        hexText.text = colorView.backgroundColor?.toHexString()
+
     }
     
     @IBAction func greenSliderChanging() {
         currentGreen = CGFloat(greenSlider.value)
         showSlidersLabels()
         showColorView(red: currentRed, green: currentGreen, blue: currentBlue)
+        hexText.text = colorView.backgroundColor?.toHexString()
+
     }
     
     @IBAction func bueSliderChanging() {
         currentBlue = CGFloat(blueSlider.value)
         showSlidersLabels()
         showColorView(red: currentRed, green: currentGreen, blue: currentBlue)
+        hexText.text = colorView.backgroundColor?.toHexString()
+
     }
     
     //MARK: - Button Actions
@@ -93,7 +102,6 @@ class ViewController: UIViewController {
         setButtonColor(red: Float.random(in: 0...1), green: Float.random(in: 0...1), blue: Float.random(in: 0...1))
     }
     
-    
 // MARK: - Private Methods
     
     private func showColorView(red: CGFloat, green: CGFloat, blue: CGFloat) {
@@ -118,6 +126,7 @@ class ViewController: UIViewController {
         showColorView(red: CGFloat(red), green: CGFloat(green), blue: CGFloat(blue))
         setSlidersValues(red: red, green: green, blue: blue)
         showSlidersLabels()
+        hexText.text = colorView.backgroundColor?.toHexString()
     }
     
     // словил баг, когда минимальное значение красного слайдера было 0.5, хотя в настройках стоял 0. Пришлось прописать в коде – только тогда заработало
@@ -130,3 +139,18 @@ class ViewController: UIViewController {
         blueSlider.maximumValue = 1
     }
 }
+
+extension UIColor {
+        func toHexString() -> String {
+            var r:CGFloat = 0
+            var g:CGFloat = 0
+            var b:CGFloat = 0
+            var a:CGFloat = 1
+
+            getRed(&r, green: &g, blue: &b, alpha: &a)
+
+            let rgb:Int = (Int)(r*255)<<16 | (Int)(g*255)<<8 | (Int)(b*255)<<0
+
+            return String(format:"#%06x", rgb)
+        }
+    }
