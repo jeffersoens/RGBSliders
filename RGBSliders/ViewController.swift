@@ -28,37 +28,76 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        setSlidersMaxMin()
         showSlidersLabels()
-        showColorView()
+        showColorView(red: currentRed, green: currentGreen, blue: currentBlue)
     }
 
-    // MARK: - IBActions
-    
- 
+    // MARK: - Slider Actions
     @IBAction func redSliderChanging() {
         currentRed = CGFloat(redSlider.value)
         showSlidersLabels()
-        showColorView()
+        showColorView(red: currentRed, green: currentGreen, blue: currentBlue)
     }
-    
     
     @IBAction func greenSliderChanging() {
         currentGreen = CGFloat(greenSlider.value)
         showSlidersLabels()
-        showColorView()
+        showColorView(red: currentRed, green: currentGreen, blue: currentBlue)
     }
-    
     
     @IBAction func bueSliderChanging() {
         currentBlue = CGFloat(blueSlider.value)
         showSlidersLabels()
-        showColorView()
+        showColorView(red: currentRed, green: currentGreen, blue: currentBlue)
     }
+    
+    //MARK: - Button Actions
+    @IBAction func setRedColorButton() {
+        setButtonColor(red: 1, green: 0.22, blue: 0.2)
+    }
+    
+    @IBAction func setGreenColorButton() {
+        setButtonColor(red: 0.2, green: 0.78, blue: 0.35)
+    }
+    
+    @IBAction func setBlueColorButton() {
+        setButtonColor(red: 0, green: 0.5, blue: 1)
+    }
+    
+    @IBAction func setOrangeColorButton() {
+        setButtonColor(red: 1, green: 0.58, blue: 0)
+    }
+    
+    @IBAction func setMintColorButton() {
+        setButtonColor(red: 0.35, green: 0.77, blue: 0.74)
+    }
+    
+    @IBAction func setPurpleColorButton() {
+        setButtonColor(red: 0.64, green: 0.34, blue: 0.84)
+    }
+    
+    @IBAction func setYellowColorButton() {
+        setButtonColor(red: 0.96, green: 0.8, blue: 0)
+    }
+    
+    @IBAction func setIndigoColorButton() {
+        setButtonColor(red: 0.31, green: 0.30, blue: 0.73)
+    }
+    
+    @IBAction func setCyanColorButton() {
+        setButtonColor(red: 0.35, green: 0.6, blue: 0.79)
+    }
+    
+    @IBAction func setRandonColorButton() {
+        setButtonColor(red: Float.random(in: 0...1), green: Float.random(in: 0...1), blue: Float.random(in: 0...1))
+    }
+    
     
 // MARK: - Private Methods
     
-    private func showColorView() {
-        colorView.backgroundColor = UIColor.init(red: currentRed, green: currentGreen, blue: currentBlue, alpha: 1)
+    private func showColorView(red: CGFloat, green: CGFloat, blue: CGFloat) {
+        colorView.backgroundColor = UIColor.init(red: red, green: green, blue: blue, alpha: 1)
         colorView.layer.borderWidth = 3
         colorView.layer.borderColor = UIColor.white.cgColor
     }
@@ -68,5 +107,26 @@ class ViewController: UIViewController {
         greenSliderLabel.text = String(format: "%.2f", greenSlider.value)
         blueSliderLabel.text = String(format: "%.2f", blueSlider.value)
     }
+    
+    private func setSlidersValues(red: Float, green: Float, blue: Float) {
+        redSlider.setValue(red, animated: true)
+        greenSlider.setValue(green, animated: true)
+        blueSlider.setValue(blue, animated: true)
+    }
+    
+    private func setButtonColor(red: Float, green: Float, blue: Float) {
+        showColorView(red: CGFloat(red), green: CGFloat(green), blue: CGFloat(blue))
+        setSlidersValues(red: red, green: green, blue: blue)
+        showSlidersLabels()
+    }
+    
+    // словил баг, когда минимальное значение красного слайдера было 0.5, хотя в настройках стоял 0. Пришлось прописать в коде – только тогда заработало
+    private func setSlidersMaxMin() {
+        redSlider.minimumValue = 0
+        redSlider.maximumValue = 1
+        greenSlider.minimumValue = 0
+        greenSlider.maximumValue = 1
+        blueSlider.minimumValue = 0
+        blueSlider.maximumValue = 1
+    }
 }
-
