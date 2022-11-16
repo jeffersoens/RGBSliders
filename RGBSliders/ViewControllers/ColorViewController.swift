@@ -7,9 +7,9 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ColorViewController: UIViewController {
     
-// MARK: - IBOutlets
+    // MARK: - IBOutlets
     @IBOutlet weak var colorView: UIView!
     
     @IBOutlet weak var redSliderLabel: UILabel!
@@ -20,23 +20,28 @@ class ViewController: UIViewController {
     @IBOutlet weak var greenSlider: UISlider!
     @IBOutlet weak var blueSlider: UISlider!
     
-    @IBOutlet weak var hexText: UITextField!
-    
     @IBOutlet weak var hexButton: UIButton!
     
+    // MARK: - Public Properties
     
-    // MARK: - Private Properties
+    var currentRed: CGFloat!
+    var currentGreen: CGFloat!
+    var currentBlue: CGFloat!
     
-    private var currentRed: CGFloat = 1
-    private var currentGreen: CGFloat = 0.5
-    private var currentBlue: CGFloat = 0
-
+    var delegate: ColorViewControllerDelegate!
+    
+    let pasteboard = UIPasteboard.general
     
     // MARK: - viewDIDLoad
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setSlidersMaxMin()
+        setSliderValues(
+            red: Float(currentRed),
+            green: Float(currentGreen),
+            blue: Float(currentBlue)
+        )
         updateSliderLabels()
         updateColorView(
             red: currentRed,
@@ -83,7 +88,7 @@ class ViewController: UIViewController {
             colorButtonAction(red: 0, green: 0.5, blue: 1)
         case 4:
             // orange
-            colorButtonAction(red: 1, green: 0.58, blue: 0)
+            colorButtonAction(red: 1, green: 0.5, blue: 0)
         case 5:
             //mint
             colorButtonAction(red: 0.35, green: 0.77, blue: 0.74)
@@ -99,20 +104,39 @@ class ViewController: UIViewController {
         case 9:
             // cyan
             colorButtonAction(red: 0.35, green: 0.6, blue: 0.79)
+        case 10:
+            colorButtonAction(
+                red: Float.random(in: 0...1),
+                green: Float.random(in: 0...1),
+                blue: Float.random(in: 0...1)
+            )
         default:
             break
         }
     }
     
-    @IBAction func randomColorButtonTapped() {
-        colorButtonAction(
-            red: Float.random(in: 0...1),
-            green: Float.random(in: 0...1),
-            blue: Float.random(in: 0...1)
+    
+    @IBAction func hexButtonPressed() {
+        pasteboard.string = colorView.backgroundColor?.toHexString()
+        
+        showAlert(
+            title: "Copied!",
+            message: "HEX color code was copied to clipboard",
+            actionTitle: "Done"
         )
     }
     
-// MARK: - Private Methods
+    @IBAction func saveButtonPressed() {
+        delegate.saveNewColors(
+            red: currentRed,
+            green: currentGreen,
+            blue: currentBlue
+        )
+        
+        dismiss(animated: true)
+    }
+    
+    // MARK: - Private Methods
     
     private func updateColorView(red: CGFloat, green: CGFloat, blue: CGFloat) {
         colorView.backgroundColor = UIColor.init(
@@ -143,6 +167,9 @@ class ViewController: UIViewController {
             green: CGFloat(green),
             blue: CGFloat(blue)
         )
+        currentRed = CGFloat(red)
+        currentGreen = CGFloat(green)
+        currentBlue = CGFloat(blue)
         setSliderValues(red: red, green: green, blue: blue)
         updateSliderLabels()
         updateHexButton()
@@ -165,18 +192,32 @@ class ViewController: UIViewController {
     }
 }
 
+// MARK: - Color to hex
+
 extension UIColor {
-        func toHexString() -> String {
-            // взял со StackOverflow :)
-            var r:CGFloat = 0
-            var g:CGFloat = 0
-            var b:CGFloat = 0
-            var a:CGFloat = 1
-
-            getRed(&r, green: &g, blue: &b, alpha: &a)
-
-            let rgb:Int = (Int)(r*255)<<16 | (Int)(g*255)<<8 | (Int)(b*255)<<0
-
-            return String(format:"#%06x", rgb)
-        }
+    // взял со StackOverflow :)
+    func toHexString() -> String {
+        var r:CGFloat = 0
+        var g:CGFloat = 0
+        var b:CGFloat = 0
+        var a:CGFloat = 1
+        
+        getRed(&r, green: &g, blue: &b, alpha: &a)
+        
+        let rgb:Int = (Int)(r*255)<<16 | (Int)(g*255)<<8 | (Int)(b*255)<<0
+        
+        return String(format:"#%06x", rgb)
     }
+}
+
+// MARK: - UIAlertController
+
+extension ColorViewController {
+    private func showAlert(title: String, message: String, actionTitle: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let action = UIAlertAction(title: actionTitle, style: .default)
+        alert.addAction(action)
+        present(alert, animated: true)
+    }
+}
+
